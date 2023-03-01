@@ -3,7 +3,7 @@
 resource "random_password" "admin_password" {
   length           = 32
   special          = true
-  override_special = "!#$%&*()-_=+[]{}<>:?"
+  override_special = "!#%&*()-_=+[]{}<>:?"
 }
 
 resource "google_secret_manager_secret" "admin_password" {
@@ -29,3 +29,4 @@ resource "google_secret_manager_secret_version" "base_url" {
   secret =  google_secret_manager_secret.base_url.id
   secret_data = "http://${google_compute_address.public_ip.address}/api/v1"
 }
+

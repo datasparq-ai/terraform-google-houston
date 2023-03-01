@@ -20,7 +20,7 @@ Creates the following resources:
 
 ```hcl-terraform
 module "houston" {
-  source = "datasparq-ai/terraform-google-houston"
+  source = "datasparq-ai/houston/google"
   zone   = "europe-west2-a"
 }
 ```
