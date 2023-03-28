@@ -19,6 +19,10 @@ Creates the following resources:
 ### Usage
 
 ```hcl-terraform
+provider "google" {
+  project = "<your Google Cloud project ID>"
+}
+
 module "houston" {
   source = "datasparq-ai/houston/google"
   zone   = "europe-west2-a"

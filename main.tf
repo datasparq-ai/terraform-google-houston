@@ -63,14 +63,14 @@ resource "google_compute_instance" "vm" {
 
 // https://registry.terraform.io/modules/terraform-google-modules/container-vm/google/latest
 // this is the equivalent of signing into the VM and running:
-//     docker run -v /etc/docker/docker-compose.yaml:/docker-compose.yaml -v "/var/run/docker.sock:/var/run/docker.sock" docker compose up
+//     docker run -v /etc/docker/docker-compose.yaml:/docker-compose.yaml -v "/var/run/docker.sock:/var/run/docker.sock" docker compose up --wait
 module "gce-container-houston" {
   source    = "terraform-google-modules/container-vm/google"
   version   = "~> 3.0"
   container = {
     image        = "docker:latest"
     command      = ["docker"]
-    args         = ["compose", "up"]
+    args         = ["compose", "-p", "houston", "up", "--wait"]
     volumeMounts = [
       {
         mountPath = "/docker-compose.yaml"
@@ -107,9 +107,9 @@ module "gce-container-houston" {
 // terraform import module.houston.google_compute_firewall.allow-houston-rule projects/tc-data-lake-dev-c94c/global/firewalls/default-allow-houston
 resource "google_compute_firewall" "allow-tcp-80" {
   project     = coalesce(var.project_id, data.google_project.project.project_id)
-  name        = "default-allow-houston"
+  name        = "houston-allow-http"
   network     = var.network
-  description = "Allow houston connections to the gce houston service on port 80"
+  description = "Allow connections to the GCE Houston service on port 80 for Houston API calls"
 
   allow {
     protocol  = "tcp"
@@ -125,4 +125,23 @@ resource "google_compute_address" "public_ip" {
   description = "The static Public IP for the Houston server"
   address_type = "EXTERNAL"
   region = replace(var.zone, "/-.$/", "")  // remove last character from zone to get region
+}
+
+# this forces terraform to wait until the API is ready before continuing
+resource "null_resource" "wait-for-availability" {
+  provisioner "local-exec" {
+    command = <<-EOF
+    #!/bin/bash
+    healthcheck="curl http://${google_compute_address.public_ip.address}/api/v1 --silent"
+    status="$($healthcheck)"
+    while [[ "$status" != "{\"message\":\"all systems green\"}" ]] ; do
+      echo "Waiting for Houston API to become available. This can take around 3 minutes."
+      sleep 5
+      status="$($healthcheck)"
+    done
+    EOF
+  }
+  triggers = {
+    always_run = timestamp()
+  }
 }

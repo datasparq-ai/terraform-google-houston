@@ -5,6 +5,6 @@ resource "google_project_service" "api_setup" {
     "secretmanager.googleapis.com",
   ])
   service = each.key
-  project = var.project_id
+  project = coalesce(var.project_id, data.google_project.project.project_id)
   disable_on_destroy = false
 }

@@ -24,6 +24,9 @@ resource "google_secret_manager_secret" "base_url" {
   replication {
     automatic = true
   }
+  depends_on = [
+    null_resource.wait-for-availability
+  ]
 }
 resource "google_secret_manager_secret_version" "base_url" {
   secret =  google_secret_manager_secret.base_url.id
