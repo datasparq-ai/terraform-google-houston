@@ -139,7 +139,7 @@ resource "null_resource" "wait-for-availability" {
     healthcheck_1="wget -qO- $URL"
     healthcheck_2="curl $URL --silent"
     count=0
-    while [[ "$($healthcheck_1)" != $MSG && "$($healthcheck_2)" != $MSG ]] ; do
+    while [[ "$($healthcheck_1)" != "$MSG" && "$($healthcheck_2)" != "$MSG" ]] ; do
       echo "Waiting for Houston API to become available. This can take around 3 minutes."
       if [[ $count -gt 300 ]] ; then
         echo -e "Reached the maximum wait time - exiting"
