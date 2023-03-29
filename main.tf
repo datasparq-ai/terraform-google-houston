@@ -128,16 +128,26 @@ resource "google_compute_address" "public_ip" {
 }
 
 # this forces terraform to wait until the API is ready before continuing
+# this will only work if either curl or wget is installed
+# wget is used because this is available in the official hashicorp/terraform Docker container
 resource "null_resource" "wait-for-availability" {
   provisioner "local-exec" {
     command = <<-EOF
-    #!/bin/bash
-    healthcheck="curl http://${google_compute_address.public_ip.address}/api/v1 --silent"
-    status="$($healthcheck)"
-    while [[ "$status" != "{\"message\":\"all systems green\"}" ]] ; do
+    #!/bin/sh
+    MSG="{\"message\":\"all systems green\"}"
+    URL=http://${google_compute_address.public_ip.address}/api/v1
+    healthcheck_1="wget -qO- $URL"
+    healthcheck_2="curl $URL --silent"
+    count=0
+    while [[ "$($healthcheck_1)" != $MSG && "$($healthcheck_2)" != $MSG ]] ; do
       echo "Waiting for Houston API to become available. This can take around 3 minutes."
-      sleep 5
-      status="$($healthcheck)"
+      if [[ $count -gt 300 ]] ; then
+        echo -e "Reached the maximum wait time - exiting"
+        exit 1
+      else
+        count=`expr $count + 1`
+        sleep 5
+      fi
     done
     EOF
   }
