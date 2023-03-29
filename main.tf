@@ -144,4 +144,5 @@ resource "null_resource" "wait-for-availability" {
   triggers = {
     always_run = timestamp()
   }
+  depends_on = [google_compute_instance.vm]
 }
