@@ -16,6 +16,7 @@ services:
     environment:
       HOUSTON_PASSWORD: '${houston_password}'
       HOUSTON_PORT: 80
+      TLS_HOST: '${tls_host}'
     network_mode: host
     depends_on:
      - redis

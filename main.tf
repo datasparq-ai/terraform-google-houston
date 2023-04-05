@@ -51,6 +51,7 @@ resource "google_compute_instance" "vm" {
   {
     config_path = "/etc/docker/docker-compose.yaml"
     houston_password = random_password.admin_password.result
+    tls_host = var.tls_host
     houston_version = var.houston_version
     redis_version = var.redis_version
   })
@@ -113,7 +114,7 @@ resource "google_compute_firewall" "allow-tcp-80" {
 
   allow {
     protocol  = "tcp"
-    ports     = ["80", "8000"]
+    ports     = ["80", "443", "8000"]
   }
 
   source_tags = []
@@ -135,9 +136,8 @@ resource "null_resource" "wait-for-availability" {
     command = <<-EOF
     #!/bin/sh
     MSG="{\"message\":\"all systems green\"}"
-    URL=http://${google_compute_address.public_ip.address}/api/v1
-    healthcheck_1="wget -qO- $URL"
-    healthcheck_2="curl $URL --silent"
+    healthcheck_1="wget -qO- ${local.base_url}"
+    healthcheck_2="curl ${local.base_url} --silent"
     count=0
     while [[ "$($healthcheck_1)" != "$MSG" && "$($healthcheck_2)" != "$MSG" ]] ; do
       echo "Waiting for Houston API to become available. This can take around 3 minutes."

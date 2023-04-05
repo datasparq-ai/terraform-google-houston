@@ -34,6 +34,12 @@ variable "instance_name" {
   description = "Name for the Virtual Machine."
 }
 
+variable "tls_host" {
+  type = string
+  default = ""
+  description = "Host domain name to be used for the server, which is passed to the Houston API via the 'TLS_HOST' environment variable. A TLS/SSL certificate will be generated via the ACME protocol and Let's Encrypt (https://letsencrypt.org/). If an empty host is provided, the server will only use HTTP. See the documentation for more information: https://github.com/datasparq-ai/houston/blob/main/docs/tls.md"
+}
+
 variable "houston_version" {
   type = string
   default = "latest"
