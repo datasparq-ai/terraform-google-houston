@@ -24,8 +24,8 @@ variable "service_account_email" {
 
 variable "machine_type" {
   type = string
-  default = "e2-micro"  # 1 shared core, 1 GB Memory
-  description = "Machine type for the Virtual Machine. Defaults to a very small machine to minimise costs."
+  default = "e2-small"  # 1 shared core, 2 GB Memory
+  description = "Machine type for the Virtual Machine. Defaults to a small machine to minimise costs."
 }
 
 variable "instance_name" {
