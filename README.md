@@ -55,7 +55,7 @@ module "houston" {
 
 ### Performance 
 
-This service, running on a `e2-micro` (1GB Memory) instance, can easily handle 10 large concurrent missions.
+This service, running on a `e2-small` (2 GB Memory) instance, can easily handle 10 large concurrent missions.
 
 ### Deployment
 
