@@ -3,7 +3,7 @@
 # Houston Container GCE Service Terraform Module
 
 This module uses Google's [container-vm](https://registry.terraform.io/modules/terraform-google-modules/container-vm/google/latest) 
-Terraform module to create a Houston server in Google Compute Engine using the Houston and Redis Docker images.
+Terraform module to create a Houston server in Google Compute Engine using the [Houston Docker image](https://hub.docker.com/repository/docker/datasparq/houston-redis/general).
 
 The following Google Cloud IAM roles are required to create this module:
 - roles/editor (Editor): for creating compute and networking resources
@@ -55,13 +55,16 @@ module "houston" {
 
 ### Performance 
 
-This service, running on a `e2-small` (2 GB Memory) instance, can easily handle 10 large concurrent missions.
+This service, running on the default `e2-small` (2 GB Memory) instance, can easily handle 10 large concurrent missions.
+
 
 ### Deployment
 
-This uses Google's [container-vm](https://registry.terraform.io/modules/terraform-google-modules/container-vm/google/latest) terraform module.
+This uses Google's [container-vm](https://registry.terraform.io/modules/terraform-google-modules/container-vm/google/latest) 
+terraform module to generate a container spec, which is then provided to a Google Compute Instance.
 
-The server should not be need to be redeployed.  
+Note: `terraform apply` will want to stop and restart this instance every time a new version of the COS image 
+(container-optimised OS) becomes available, which may result in temporary downtime.
 
 
 ### Connect via SSH
@@ -75,5 +78,4 @@ For convenience, use gcloud as this will transfer your SSH key to the instance f
 Alternatively, use an ssh client. After adding your SSH public key to the Houston VM instance, use:
 
     ssh -L 8000:<Instance IP Address>:8000 <username>@<Instance IP Address>
-
 

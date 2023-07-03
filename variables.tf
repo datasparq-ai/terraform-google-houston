@@ -46,12 +46,6 @@ variable "houston_version" {
   description = "Houston container tag to use."
 }
 
-variable "redis_version" {
-  type = string
-  default = "latest"
-  description = "Redis container tag to use."
-}
-
 variable "base_url_secret_id" {
   type = string
   default = "houston-base-url"

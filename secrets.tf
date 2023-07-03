@@ -28,7 +28,7 @@ resource "google_secret_manager_secret" "base_url" {
     automatic = true
   }
   depends_on = [
-    null_resource.wait-for-availability
+    google_compute_instance.vm
   ]
 }
 resource "google_secret_manager_secret_version" "base_url" {
