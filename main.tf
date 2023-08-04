@@ -55,6 +55,7 @@ resource "google_compute_instance" "vm" {
 
 // https://registry.terraform.io/modules/terraform-google-modules/container-vm/google/latest
 // note: we don't need to say which ports to open
+// note: this won't fail if container fails to start
 module "gce-container-houston" {
   source    = "terraform-google-modules/container-vm/google"
   version   = "~> 3.0"
@@ -65,6 +66,10 @@ module "gce-container-houston" {
       {
         mountPath = "/var/run/docker.sock"
         name      = "docker_sock"
+      },
+      {
+        mountPath = "/data"
+        name      = "data"
       }
     ]
     env = [
@@ -86,9 +91,15 @@ module "gce-container-houston" {
   # Declare the Volumes which will be used for mounting.
   volumes = [
     {
-      name = "docker_sock"
+      name     = "docker_sock"
       hostPath = {
         path = "/var/run/docker.sock"
+      }
+    },
+    {
+      name = "data"
+      hostPath = {
+        path = "/home/houston"
       }
     }
   ]

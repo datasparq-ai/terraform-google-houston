@@ -66,6 +66,8 @@ terraform module to generate a container spec, which is then provided to a Googl
 Note: `terraform apply` will want to stop and restart this instance every time a new version of the COS image 
 (container-optimised OS) becomes available, which may result in temporary downtime.
 
+The VM can be stopped and restarted without data loss: 
+
 
 ### Connect via SSH
 
