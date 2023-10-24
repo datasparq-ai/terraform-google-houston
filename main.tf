@@ -15,11 +15,11 @@ resource "google_compute_instance" "vm" {
   machine_type = var.machine_type
   zone         = var.zone
   resource_policies = []
-  allow_stopping_for_update = true
+  allow_stopping_for_update = false
 
   boot_disk {
     initialize_params {
-      image = module.gce-container-houston.source_image
+      image = "projects/cos-cloud/global/images/family/cos-stable"
     }
   }
 
