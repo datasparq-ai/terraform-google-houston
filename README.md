@@ -1,9 +1,9 @@
 
-
 # Houston Container GCE Service Terraform Module
 
+Terraform module to create a [Houston](https://github.com/datasparq-ai/houston/) API server in Google Compute Engine 
+using the [Houston Docker image](https://hub.docker.com/repository/docker/datasparq/houston-redis/general).
 This module uses Google's [container-vm](https://registry.terraform.io/modules/terraform-google-modules/container-vm/google/latest) 
-Terraform module to create a Houston server in Google Compute Engine using the [Houston Docker image](https://hub.docker.com/repository/docker/datasparq/houston-redis/general).
 
 The following Google Cloud IAM roles are required to create this module:
 - roles/editor (Editor): for creating compute and networking resources
@@ -20,6 +20,7 @@ Creates the following resources:
 - Base URL secret:
   - google_secret_manager_secret.base_url: Secret in GCP secret manager for the API base URL
   - google_secret_manager_secret_version.base_url: Secret version for the API base URL
+
 
 ### Usage
 
@@ -55,18 +56,13 @@ module "houston" {
 
 ### Performance 
 
-This service, running on the default `e2-small` (2 GB Memory) instance, can easily handle 10 large concurrent missions.
+This service, running on the default `e2-small` (2 GB Memory) instance, can easily handle 500+ large concurrent missions.
 
 
 ### Deployment
 
 This uses Google's [container-vm](https://registry.terraform.io/modules/terraform-google-modules/container-vm/google/latest) 
 terraform module to generate a container spec, which is then provided to a Google Compute Instance.
-
-Note: `terraform apply` will want to stop and restart this instance every time a new version of the COS image 
-(container-optimised OS) becomes available, which may result in temporary downtime.
-
-The VM can be stopped and restarted without data loss: 
 
 
 ### Connect via SSH
