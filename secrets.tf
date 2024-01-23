@@ -10,7 +10,7 @@ resource "google_secret_manager_secret" "admin_password" {
   project = coalesce(var.project_id, data.google_project.project.project_id)
   secret_id = var.admin_password_secret_id
   replication {
-    automatic = true
+    auto = true
   }
 }
 resource "google_secret_manager_secret_version" "admin_password" {
@@ -25,7 +25,7 @@ resource "google_secret_manager_secret" "base_url" {
   project = coalesce(var.project_id, data.google_project.project.project_id)
   secret_id =  var.base_url_secret_id
   replication {
-    automatic = true
+    auto = true
   }
   depends_on = [
     google_compute_instance.vm
