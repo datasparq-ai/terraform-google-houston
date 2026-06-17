@@ -32,14 +32,17 @@ resource "google_compute_instance" "vm" {
 
   tags = ["houston"]
 
+  # Render the docker-run startup script instead of the deprecated
+  # gce-container-declaration agent metadata.
+  metadata_startup_script = templatefile("${path.module}/startup-script.sh.tftpl", {
+    houston_password = random_password.admin_password.result
+    houston_version  = var.houston_version
+    tls_host         = var.tls_host
+  })
+
   metadata = {
-    gce-container-declaration = module.gce-container-houston.metadata_value
     google-logging-enabled    = "true"
     google-monitoring-enabled = "true"
-  }
-
-  labels = {
-    container-vm = module.gce-container-houston.vm_container_label
   }
 
   service_account {
@@ -50,61 +53,6 @@ resource "google_compute_instance" "vm" {
   depends_on = [
     google_project_service.api_setup
   ]
-}
-
-
-// https://registry.terraform.io/modules/terraform-google-modules/container-vm/google/latest
-// note: we don't need to say which ports to open
-// note: this won't fail if container fails to start
-module "gce-container-houston" {
-  source    = "terraform-google-modules/container-vm/google"
-  version   = "~> 3.0"
-  container = {
-    image        = "datasparq/houston-redis:${var.houston_version}"
-    args         = ["api"]
-    volumeMounts = [
-      {
-        mountPath = "/var/run/docker.sock"
-        name      = "docker_sock"
-      },
-      {
-        mountPath = "/data"
-        name      = "data"
-      }
-    ]
-    env = [
-      {
-        name = "HOUSTON_PASSWORD"
-        value = random_password.admin_password.result
-      },
-      {
-        name = "HOUSTON_PORT"
-        value = 80
-      },
-      {
-        name = "TLS_HOST"
-        value = var.tls_host
-      }
-    ]
-  }
-
-  # Declare the Volumes which will be used for mounting.
-  volumes = [
-    {
-      name     = "docker_sock"
-      hostPath = {
-        path = "/var/run/docker.sock"
-      }
-    },
-    {
-      name = "data"
-      hostPath = {
-        path = "/home/houston"
-      }
-    }
-  ]
-
-  restart_policy = "Always"
 }
 
 
@@ -120,7 +68,8 @@ resource "google_compute_firewall" "allow-tcp-80" {
     ports     = ["80", "443", "8000"]
   }
 
-  source_tags = []
+  # source_tags = []
+  source_ranges = ["0.0.0.0/0"]
   target_tags = ["houston"]
 }
 

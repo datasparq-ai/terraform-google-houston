@@ -3,7 +3,6 @@
 
 Terraform module to create a [Houston](https://github.com/datasparq-ai/houston/) API server in Google Compute Engine 
 using the [Houston Docker image](https://hub.docker.com/repository/docker/datasparq/houston-redis/general).
-This module uses Google's [container-vm](https://registry.terraform.io/modules/terraform-google-modules/container-vm/google/latest) 
 
 The following Google Cloud IAM roles are required to create this module:
 - roles/editor (Editor): for creating compute and networking resources
@@ -61,8 +60,8 @@ This service, running on the default `e2-small` (2 GB Memory) instance, can easi
 
 ### Deployment
 
-This uses Google's [container-vm](https://registry.terraform.io/modules/terraform-google-modules/container-vm/google/latest) 
-terraform module to generate a container spec, which is then provided to a Google Compute Instance.
+The Houston container runs on a Google Compute Instance booted from a [Container-Optimized OS](https://cloud.google.com/container-optimized-os/docs)
+image. A startup script provided to the instance launches the container with Docker on boot.
 
 
 ### Connect via SSH
