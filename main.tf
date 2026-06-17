@@ -10,11 +10,11 @@ data "google_compute_default_service_account" "default" {
 }
 
 resource "google_compute_instance" "vm" {
-  project      = coalesce(var.project_id, data.google_project.project.project_id)
-  name         = var.instance_name
-  machine_type = var.machine_type
-  zone         = var.zone
-  resource_policies = []
+  project                   = coalesce(var.project_id, data.google_project.project.project_id)
+  name                      = var.instance_name
+  machine_type              = var.machine_type
+  zone                      = var.zone
+  resource_policies         = []
   allow_stopping_for_update = false
 
   boot_disk {
@@ -64,18 +64,18 @@ resource "google_compute_firewall" "allow-tcp-80" {
   description = "Allow connections to the GCE Houston service on port 80 for Houston API calls"
 
   allow {
-    protocol  = "tcp"
-    ports     = ["80", "443", "8000"]
+    protocol = "tcp"
+    ports    = ["80", "443", "8000"]
   }
 
   # source_tags = []
   source_ranges = ["0.0.0.0/0"]
-  target_tags = ["houston"]
+  target_tags   = ["houston"]
 }
 
 resource "google_compute_address" "public_ip" {
-  name = "houston-public-ip"
-  description = "The static Public IP for the Houston server"
+  name         = "houston-public-ip"
+  description  = "The static Public IP for the Houston server"
   address_type = "EXTERNAL"
-  region = replace(var.zone, "/-.$/", "")  // remove last character from zone to get region
+  region       = replace(var.zone, "/-.$/", "") // remove last character from zone to get region
 }
